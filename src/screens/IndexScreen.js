@@ -6,34 +6,50 @@ import { Feather } from '@expo/vector-icons';
 const IndexScreen = ({ navigation }) => {
     const {state, addBlogPost, deleteBlogPost} = useContext(BlogContext);
     
+    const blogList = (
+        <FlatList
+            data={state}
+            keyExtractor={blogPost => blogPost.title}
+            renderItem={({item}) => {
+                return (
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('Show', {id: item.id, title: item.title})}
+                    >
+                        <View style={styles.row}>
+                            <Text style={styles.title}>{item.title} - {item.id}</Text>
+                            <TouchableOpacity
+                                onPress={() => deleteBlogPost(item.id)}
+                            >
+                                <Feather style={styles.trashIcon} name="trash-2"/>
+                            </TouchableOpacity>
+                        </View>
+                    </TouchableOpacity>
+                );
+            }}
+        />
+    );
+
+    const noBlogs = (
+        <Text style={styles.noBlogs}>No blogs to show.</Text>
+    );
+
     return(
         <>
-            <Button
-                title= 'Add Post'
-                onPress={addBlogPost}
-            />
-            <FlatList
-                data={state}
-                keyExtractor={blogPost => blogPost.title}
-                renderItem={({item}) => {
-                    return (
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate('Show', {id: item.id, title: item.title})}
-                        >
-                            <View style={styles.row}>
-                                <Text style={styles.title}>{item.title} - {item.id}</Text>
-                                <TouchableOpacity
-                                    onPress={() => deleteBlogPost(item.id)}
-                                >
-                                    <Feather style={styles.trashIcon} name="trash-2"/>
-                                </TouchableOpacity>
-                            </View>
-                        </TouchableOpacity>
-                    );
-                }}
-            />
+            { state.length > 0 ? blogList : noBlogs }
         </>
     );
+};
+
+IndexScreen.navigationOptions = ({ navigation }) => {
+    return {
+        headerRight: (
+            <TouchableOpacity
+                onPress={() => navigation.navigate('Create')}
+            >
+                <Feather style={styles.plusIcon} name='plus'/>
+            </TouchableOpacity>
+        ),
+    };
 };
 
 const styles = StyleSheet.create({
@@ -53,6 +69,15 @@ const styles = StyleSheet.create({
     },  
     trashIcon: {
         fontSize: 24,
+    },
+    plusIcon: {
+        fontSize: 30,
+        marginRight: 10,
+    },
+    noBlogs: {
+        fontWeight: "bold",
+        textAlign: "center",
+        marginTop: 20,
     }
 });
 
