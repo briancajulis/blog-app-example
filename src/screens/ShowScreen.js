@@ -19,10 +19,9 @@ const ShowScreen = ({ navigation }) => {
 // Changes the header title in navigation
 ShowScreen.navigationOptions = ({ navigation }) => {
     return {
-        title: navigation.getParam('title'),
         headerRight:(
             <TouchableOpacity
-                onPress={() => navigation.navigate('Edit')}
+                onPress={() => navigation.navigate('Edit', { id: navigation.getParam('id') })}
             >
                 <FontAwesome name="pencil" style={styles.editIcon} />
             </TouchableOpacity>
