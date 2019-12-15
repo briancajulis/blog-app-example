@@ -1,11 +1,22 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, Button, TouchableOpacity } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Context as BlogContext } from '../context/BlogContext';
 import { Feather } from '@expo/vector-icons';
 
 const IndexScreen = ({ navigation }) => {
-    const {state, addBlogPost, deleteBlogPost} = useContext(BlogContext);
+    const {state, getBlogPost, deleteBlogPost} = useContext(BlogContext);
     
+    useEffect(() => {
+        getBlogPost();
+        const listener = navigation.addListener('didFocus', () => { // calls the callback function whenever this screen is "in focus"
+            getBlogPost();
+        });
+        
+        return () => {
+            listener.remove(); // cleans up listener(leaving listener could lead to memory leak)
+        };
+    }, []) // the empty array tells useEffect to only run one time when it loads on screen
+
     const blogList = (
         <FlatList
             data={state}
@@ -59,10 +70,12 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         paddingHorizontal: 10,
         margin: 15,
+        marginTop: 15,
         shadowColor: '#000',
         shadowOpacity: .5,
         shadowOffset: { width: 0, height: 2},
         backgroundColor: 'white',
+        elevation: 1, // adds box shadow for android
     },
     title: {
         fontSize: 18
